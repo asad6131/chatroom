@@ -2,7 +2,6 @@ const path = require('path');
 const http = require('http');
 const express = require('express');
 const socketIO = require('socket.io');
-
 const publicPath = path.join(__dirname, '../public');
 const port = process.env.PORT || 3000;
 //console.log(publicPath);
@@ -14,21 +13,30 @@ app.use(express.static(publicPath));
 
 io.on('connection', (socket) =>{
   console.log('new user connected');
-  
-  socket.emit('newMessage', {
-    from: 'mike',
-    text : `hey, what's going on.`,
-    createdAt: 1234567
-  });
 
+
+  //emit to single connection
+  // socket.emit('newMessage', {
+  //   from: 'mike',
+  //   text : `hey, what's going on.`,
+  //   createdAt: 1234567
+
+
+  //here we are listening a new message coming from one user
   socket.on('createMessage', (message) => {
-    console.log('createMessage', message); 
+    console.log('createMessage', message);
+    
+    //and then we are emitting the users message to all other users
+    io.emit('newMessage', {
+      from : message.from,
+      text : message.text,
+      createdAt : new Date().getTime()
+    }); 
   });
   socket.on('disconnect' , () =>{
     console.log('user was disconnected');
   });
 });
-
  
 server.listen(port, () => {
     console.log(`server is up on port ${port}`);
