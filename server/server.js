@@ -2,6 +2,8 @@ const path = require('path');
 const http = require('http');
 const express = require('express');
 const socketIO = require('socket.io');
+
+const {generateMessage} = require('./utils/message');
 const publicPath = path.join(__dirname, '../public');
 const port = process.env.PORT || 3000;
 //console.log(publicPath);
@@ -21,29 +23,17 @@ io.on('connection', (socket) =>{
   //   createdAt: 1234567
 
       //socket.emit from admin to new user
-      socket.emit('newMessage', {
-        from : 'Admin',
-        text : 'welcome to the chat app',
-        createdAt: new Date().getTime()
-      });
+      socket.emit('newMessage', generateMessage('Admin', 'Welcome to the chat app'));
    
       // socket.broadcast.emit from admin to all users other than new 
-      socket.broadcast.emit('newMessage', {
-        from : 'Admin',
-        text: 'new user joined',
-        createdAt: new Date().getTime()
-      });
+      socket.broadcast.emit('newMessage',generateMessage('Admin', 'New user joined'));
   
 
   //here we are listening a new message coming from one user
   socket.on('createMessage', (message) => {
     console.log('createMessage', message);
     //and then we are emitting the users message to all other users
-     io.emit('newMessage', {
-       from : message.from,
-       text : message.text,
-       createdAt : new Date().getTime()
-     }); 
+     io.emit('newMessage', generateMessage(message.from, message.text)); 
 
     //but we need to emit the message to all of the other users but not ourself.... so as a solution we are using broadcasting
     // socket.broadcast.emit('newMessage', {
