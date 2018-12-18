@@ -47,12 +47,13 @@ socket.on('newLocationMessage', function (message) {
 //handler for submit button of form 
 jQuery('#message-form').on('submit', function(e){
   e.preventDefault();
+  var messageTextbox =  jQuery('[name=message]');
   socket.emit('createMessage', {
     from: 'User',
     //here we are using jquery to select text field of form
-    text: jQuery('[name=message]').val()
+    text: messageTextbox.val()
   }, function() {
-    
+    messageTextbox.val('');
   });
 });
 
@@ -62,13 +63,17 @@ locationButton.on('click', function() {
   if(!navigator.geolocation){
     return alert('Geolocatinon not supported by your browser.');
   }
+//we are gonna disable this button after we are gonna confirm the user evan have support for location
+  locationButton.attr('disabled' , 'disabled').text('sending location...');
 
   navigator.geolocation.getCurrentPosition(function (position) {
+    locationButton.removeAttr('disabled').text('Send location');
     socket.emit('createLocationMessage', {
       latitude : position.coords.latitude,
       longitude : position.coords.longitude
     });
   }, function () {
+    locationButton.removeAttr('disabled').text('Send location');
     alert('Unable to fetch location.');
   });
 });

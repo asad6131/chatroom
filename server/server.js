@@ -35,7 +35,7 @@ io.on('connection', (socket) =>{
    
     //and then we are emitting the users message to all other users
      io.emit('newMessage', generateMessage(message.from, message.text)); 
-     callback('this is from the server');
+     callback();
 
     //but we need to emit the message to all of the other users but not ourself.... so as a solution we are using broadcasting
     // socket.broadcast.emit('newMessage', {
