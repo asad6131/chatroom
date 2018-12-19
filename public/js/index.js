@@ -16,36 +16,46 @@ socket.on('disconnect' , function (){
 
 //here we are listening msg from server and rendering on browser
 socket.on('newMessage', function (message){
+     var formattedTime = moment(message.createdAt).format('h:mm a');
+     var template = jQuery('#message-template').html();
+     var html = Mustache.render(template, {
+       text : message.text,
+       from : message.from,
+       createdAt : formattedTime
+     });
 
-    var formattedTime = moment(message.createdAt).format('h:mm a');
-    //console.log('newMessage', message);
-    //here we are using jquery to create an  element
-    var li = jQuery('<li> </li>');
-    li.text(`${message.from} ${formattedTime}: ${message.text}`);
+     jQuery('#messages').append(html);
 
-    jQuery('#messages').append(li);
+    // //console.log('newMessage', message);
+    // //here we are using jquery to create an  element
+    // var li = jQuery('<li> </li>');
+    // li.text(`${message.from} ${formattedTime}: ${message.text}`);
+
+    // jQuery('#messages').append(li);
 });
 
 
 //listener for newLocationMessage 
 socket.on('newLocationMessage', function (message) {
   var formattedTime = moment(message.createdAt).format('h:mm a');
-  var li = jQuery('<li></li>');
-  var a = jQuery('<a target= "_blank">My current Location</a>');
+  var template = jQuery('#location-message-template').html();
+  var html = Mustache.render(template, {
+    from : message.from,
+    url : message.url,
+    createdAt : formattedTime 
+  });
 
-  li.text(`${message.from} ${formattedTime}: `);
-  a.attr('href', message.url);
-  li.append(a);
-  jQuery('#messages').append(li);
+  jQuery('#messages').append(html);
+
+  // var li = jQuery('<li></li>');
+  // var a = jQuery('<a target= "_blank">My current Location</a>');
+
+  // li.text(`${message.from} ${formattedTime}: `);
+  // a.attr('href', message.url);
+  // li.append(a);
+  // jQuery('#messages').append(li);
 });
 
-//now we don't need custom message because we are now sending it from browser ;)...
-// socket.emit('createMessage', {
-//   from: 'frank',
-//   text: 'yess!'
-// }, function(data) {
-//   console.log('got it', data);
-// });
 
 //handler for submit button of form 
 jQuery('#message-form').on('submit', function(e){
