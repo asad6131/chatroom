@@ -1,10 +1,10 @@
 var moment = require('moment');
 
-var date = moment(createdAt);
+var date = moment();
 // date.add(100, 'year').subtract(9,'months');
 // console.log(date.format('MMM Do, YYYY'));
 
 
-var  createdAt = 1234;
+//var  createdAt = 1234;
 
 console.log(date.format('h:mm a'));

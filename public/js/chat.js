@@ -18,18 +18,32 @@ function scrollToBottom (){
 
 }
 socket.on('connect' , function (){
-  console.log('connected to server');
-
-  //here we are creating/emitting  a message to server for sending to another user 
-  // socket.emit('createMessage', {
-  //   from : 'zaqqi',
-  //   text: 'hey its me.'
-  // });
+  var params = jQuery.deparam(window.location.search);
+//emitting join event for joining room 
+  socket.emit('join', params, function (err) {
+    if(err){
+      alert(err);
+      window.location.href = '/';
+    }else{
+       console.log('no err');
+    }
+  })
 });
 
 socket.on('disconnect' , function (){
   console.log('disconnected from server');
 });
+
+socket.on('updateUserList', function (users){
+  //creating orderedlist using jquery
+  var ol = jQuery('<ol></ol>');
+
+  users.forEach(function (user) {
+    ol.append(jQuery('<li></li>').text(user));
+  });
+  //rendering list on dom 
+  jQuery('#users').html(ol);
+})
 
 //here we are listening msg from server and rendering on browser
 socket.on('newMessage', function (message){
