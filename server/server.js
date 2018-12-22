@@ -42,10 +42,14 @@ io.on('connection', (socket) =>{
 
   //here we are listening a new message coming from one user
   socket.on('createMessage', (message, callback) => {
-    console.log('createMessage', message);
-   
+     var user = users.getUser(socket.id);
+
+     if(user && isRealString(message.text)) {
+      io.to(user.room).emit('newMessage', generateMessage(user.name, message.text)); 
+     }
+  
     //and then we are emitting the users message to all other users
-     io.emit('newMessage', generateMessage(message.from, message.text)); 
+     
      callback();
 
     //but we need to emit the message to all of the other users but not ourself.... so as a solution we are using broadcasting
@@ -59,7 +63,12 @@ io.on('connection', (socket) =>{
 
   //listener for send location message from customer 
   socket.on('createLocationMessage' , (coords) => {
-    io.emit('newLocationMessage' , generateLocationMessage('Admin' , coords.latitude, coords.longitude));
+    var user = users.getUser(socket.id);
+
+    if(user) {
+      io.to(user.room).emit('newLocationMessage' , generateLocationMessage(user.name , coords.latitude, coords.longitude)); 
+    }
+    
   });
   
   
